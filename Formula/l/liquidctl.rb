@@ -19,6 +19,7 @@ class Liquidctl < Formula
     sha256 cellar: :any_skip_relocation, x86_64_linux:   "d9f93a1689b0f6f32187d300046a9fcb4e16d105a591def6f33d7f63731478ae"
   end
 
+  depends_on "pkg-config" => :build # for hidapi
   depends_on "hidapi"
   depends_on "libusb"
   depends_on "pillow"
@@ -44,14 +45,8 @@ class Liquidctl < Formula
   end
 
   resource "hidapi" do
-    url "https://files.pythonhosted.org/packages/95/0e/c106800c94219ec3e6b483210e91623117bfafcf1decaff3c422e18af349/hidapi-0.14.0.tar.gz"
-    sha256 "a7cb029286ced5426a381286526d9501846409701a29c2538615c3d1a612b8be"
-
-    # patch to build with Cython 3+, remove in next release
-    patch do
-      url "https://github.com/trezor/cython-hidapi/commit/749da6931f57c4c30596de678125648ccfd6e1cd.patch?full_index=1"
-      sha256 "e3d70eb9850c7be0fdb0c31bf575b33be5c5848def904760a6ca9f4c3824f000"
-    end
+    url "https://files.pythonhosted.org/packages/bf/6f/90c536b020a8e860f047a2839830a1ade3e1490e67336ecf489b4856eb7b/hidapi-0.14.0.post2.tar.gz"
+    sha256 "6c0e97ba6b059a309d51b495a8f0d5efbcea8756b640d98b6f6bb9fdef2458ac"
   end
 
   resource "pyusb" do
@@ -60,26 +55,15 @@ class Liquidctl < Formula
   end
 
   resource "setuptools" do
-    url "https://files.pythonhosted.org/packages/65/d8/10a70e86f6c28ae59f101a9de6d77bf70f147180fbf40c3af0f64080adc3/setuptools-70.3.0.tar.gz"
-    sha256 "f171bab1dfbc86b132997f26a119f6056a57950d058587841a0082e8830f9dc5"
+    url "https://files.pythonhosted.org/packages/32/c0/5b8013b5a812701c72e3b1e2b378edaa6514d06bee6704a5ab0d7fa52931/setuptools-71.1.0.tar.gz"
+    sha256 "032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"
   end
 
   def install
-    python3 = "python3.12"
-    venv = virtualenv_create(libexec, python3)
-
     # Use brewed hidadpi: https://github.com/trezor/cython-hidapi/issues/54
-    # TODO: For hidapi>0.14, replace with ENV["HIDAPI_SYSTEM_HIDAPI"] = ENV["HIDAPI_WITH_LIBUSB"] = "1"
-    resource("hidapi").stage do
-      inreplace "setup.py" do |s|
-        s.gsub! "system_hidapi = 0", "system_hidapi = 1"
-        s.gsub! "/usr/include/hidapi", "#{Formula["hidapi"].opt_include}/hidapi"
-      end
-      venv.pip_install Pathname.pwd
-    end
+    ENV["HIDAPI_SYSTEM_HIDAPI"] = ENV["HIDAPI_WITH_LIBUSB"] = "1"
 
-    venv.pip_install resources.reject { |r| r.name == "hidapi" }
-    venv.pip_install_and_link buildpath
+    virtualenv_install_with_resources
 
     man_page = buildpath/"liquidctl.8"
     # setting the is_macos register to 1 adjusts the man page for macOS
@@ -90,6 +74,6 @@ class Liquidctl < Formula
   end
 
   test do
-    shell_output "#{bin}/liquidctl list --verbose --debug"
+    system bin/"liquidctl", "list", "--verbose", "--debug"
   end
 end
