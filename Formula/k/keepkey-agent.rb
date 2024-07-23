@@ -18,6 +18,7 @@ class KeepkeyAgent < Formula
     sha256 cellar: :any_skip_relocation, x86_64_linux:   "4b9024586309813bd02ba23a1d0c558160f96e07fd40418df63ebdd0eb8e08d4"
   end
 
+  depends_on "pkg-config" => :build # for hidapi
   depends_on "cryptography"
   depends_on "libusb"
   depends_on "python@3.12"
@@ -40,8 +41,8 @@ class KeepkeyAgent < Formula
   end
 
   resource "docutils" do
-    url "https://files.pythonhosted.org/packages/1f/53/a5da4f2c5739cf66290fac1431ee52aff6851c7c8ffd8264f13affd7bcdd/docutils-0.20.1.tar.gz"
-    sha256 "f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"
+    url "https://files.pythonhosted.org/packages/ae/ed/aefcc8cd0ba62a0560c3c18c33925362d46c6075480bfa4df87b28e169a9/docutils-0.21.2.tar.gz"
+    sha256 "3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f"
   end
 
   resource "ecdsa" do
@@ -50,14 +51,8 @@ class KeepkeyAgent < Formula
   end
 
   resource "hidapi" do
-    url "https://files.pythonhosted.org/packages/95/0e/c106800c94219ec3e6b483210e91623117bfafcf1decaff3c422e18af349/hidapi-0.14.0.tar.gz"
-    sha256 "a7cb029286ced5426a381286526d9501846409701a29c2538615c3d1a612b8be"
-
-    # patch to build with Cython 3+, remove in next release
-    patch do
-      url "https://github.com/trezor/cython-hidapi/commit/749da6931f57c4c30596de678125648ccfd6e1cd.patch?full_index=1"
-      sha256 "e3d70eb9850c7be0fdb0c31bf575b33be5c5848def904760a6ca9f4c3824f000"
-    end
+    url "https://files.pythonhosted.org/packages/bf/6f/90c536b020a8e860f047a2839830a1ade3e1490e67336ecf489b4856eb7b/hidapi-0.14.0.post2.tar.gz"
+    sha256 "6c0e97ba6b059a309d51b495a8f0d5efbcea8756b640d98b6f6bb9fdef2458ac"
   end
 
   resource "keepkey" do
@@ -111,8 +106,8 @@ class KeepkeyAgent < Formula
   end
 
   resource "setuptools" do
-    url "https://files.pythonhosted.org/packages/4d/5b/dc575711b6b8f2f866131a40d053e30e962e633b332acf7cd2c24843d83d/setuptools-69.2.0.tar.gz"
-    sha256 "0ff4183f8f42cd8fa3acea16c45205521a4ef28f73c6391d8a25e92893134f2e"
+    url "https://files.pythonhosted.org/packages/32/c0/5b8013b5a812701c72e3b1e2b378edaa6514d06bee6704a5ab0d7fa52931/setuptools-71.1.0.tar.gz"
+    sha256 "032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"
   end
 
   resource "six" do
