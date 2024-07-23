@@ -18,6 +18,7 @@ class TrezorAgent < Formula
     sha256 cellar: :any_skip_relocation, x86_64_linux:   "32bec446c5e6c475dc74139c45597da3eecc63ab093e33d90631ef7147640471"
   end
 
+  depends_on "pkg-config" => :build # for hidapi
   depends_on "certifi"
   depends_on "cryptography"
   depends_on "libusb"
@@ -85,14 +86,8 @@ class TrezorAgent < Formula
   end
 
   resource "hidapi" do
-    url "https://files.pythonhosted.org/packages/95/0e/c106800c94219ec3e6b483210e91623117bfafcf1decaff3c422e18af349/hidapi-0.14.0.tar.gz"
-    sha256 "a7cb029286ced5426a381286526d9501846409701a29c2538615c3d1a612b8be"
-
-    # patch to build with Cython 3+, remove in next release
-    patch do
-      url "https://github.com/trezor/cython-hidapi/commit/749da6931f57c4c30596de678125648ccfd6e1cd.patch?full_index=1"
-      sha256 "e3d70eb9850c7be0fdb0c31bf575b33be5c5848def904760a6ca9f4c3824f000"
-    end
+    url "https://files.pythonhosted.org/packages/bf/6f/90c536b020a8e860f047a2839830a1ade3e1490e67336ecf489b4856eb7b/hidapi-0.14.0.post2.tar.gz"
+    sha256 "6c0e97ba6b059a309d51b495a8f0d5efbcea8756b640d98b6f6bb9fdef2458ac"
   end
 
   resource "idna" do
@@ -236,8 +231,8 @@ class TrezorAgent < Formula
   end
 
   resource "setuptools" do
-    url "https://files.pythonhosted.org/packages/aa/60/5db2249526c9b453c5bb8b9f6965fcab0ddb7f40ad734420b3b421f7da44/setuptools-70.0.0.tar.gz"
-    sha256 "f211a66637b8fa059bb28183da127d4e86396c991a942b028c6650d4319c3fd0"
+    url "https://files.pythonhosted.org/packages/32/c0/5b8013b5a812701c72e3b1e2b378edaa6514d06bee6704a5ab0d7fa52931/setuptools-71.1.0.tar.gz"
+    sha256 "032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"
   end
 
   resource "six" do
@@ -246,8 +241,8 @@ class TrezorAgent < Formula
   end
 
   resource "trezor" do
-    url "https://files.pythonhosted.org/packages/8e/82/831de0a643401c4dcfbbc17c33de35b8c3d23281ac60a0831be5f10838d3/trezor-0.13.8.tar.gz"
-    sha256 "634d4eddf35603257c321618d8548c6a35b27384657b65e3b0bdbad635a57cff"
+    url "https://files.pythonhosted.org/packages/10/11/b80ffb168b3e1c41c96c7278693eb6421cf567181afea9514c1ccd11c1ed/trezor-0.13.9.tar.gz"
+    sha256 "9450bd7bb9d23e5e33a3c9e58e18f058b44c9d9c34ca664b4981a795aa9fb1ef"
   end
 
   resource "typing-extensions" do
