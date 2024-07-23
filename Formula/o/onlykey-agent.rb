@@ -18,6 +18,7 @@ class OnlykeyAgent < Formula
     sha256 cellar: :any_skip_relocation, x86_64_linux:   "49ecb628db5ccc6a14c1ee452f2387ac3a60f2df3e5dec534f1a1c754c692b79"
   end
 
+  depends_on "pkg-config" => :build # for hidapi
   depends_on "certifi"
   depends_on "cryptography"
   depends_on "cython"
@@ -72,14 +73,8 @@ class OnlykeyAgent < Formula
   end
 
   resource "hidapi" do
-    url "https://files.pythonhosted.org/packages/95/0e/c106800c94219ec3e6b483210e91623117bfafcf1decaff3c422e18af349/hidapi-0.14.0.tar.gz"
-    sha256 "a7cb029286ced5426a381286526d9501846409701a29c2538615c3d1a612b8be"
-
-    # patch to build with Cython 3+, remove in next release
-    patch do
-      url "https://github.com/trezor/cython-hidapi/commit/749da6931f57c4c30596de678125648ccfd6e1cd.patch?full_index=1"
-      sha256 "e3d70eb9850c7be0fdb0c31bf575b33be5c5848def904760a6ca9f4c3824f000"
-    end
+    url "https://files.pythonhosted.org/packages/bf/6f/90c536b020a8e860f047a2839830a1ade3e1490e67336ecf489b4856eb7b/hidapi-0.14.0.post2.tar.gz"
+    sha256 "6c0e97ba6b059a309d51b495a8f0d5efbcea8756b640d98b6f6bb9fdef2458ac"
   end
 
   resource "idna" do
@@ -163,8 +158,8 @@ class OnlykeyAgent < Formula
   end
 
   resource "setuptools" do
-    url "https://files.pythonhosted.org/packages/aa/60/5db2249526c9b453c5bb8b9f6965fcab0ddb7f40ad734420b3b421f7da44/setuptools-70.0.0.tar.gz"
-    sha256 "f211a66637b8fa059bb28183da127d4e86396c991a942b028c6650d4319c3fd0"
+    url "https://files.pythonhosted.org/packages/32/c0/5b8013b5a812701c72e3b1e2b378edaa6514d06bee6704a5ab0d7fa52931/setuptools-71.1.0.tar.gz"
+    sha256 "032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"
   end
 
   resource "six" do
@@ -193,31 +188,21 @@ class OnlykeyAgent < Formula
   end
 
   def install
-    python3 = "python3.12"
-    venv = virtualenv_create(libexec, python3)
-
     # Use brewed hidadpi: https://github.com/trezor/cython-hidapi/issues/54
-    # TODO: For hidapi>0.14, replace with ENV["HIDAPI_SYSTEM_HIDAPI"] = ENV["HIDAPI_WITH_LIBUSB"] = "1"
-    resource("hidapi").stage do
-      inreplace "setup.py" do |s|
-        s.gsub! "system_hidapi = 0", "system_hidapi = 1"
-        s.gsub! "/usr/include/hidapi", "#{Formula["hidapi"].opt_include}/hidapi"
-      end
-      venv.pip_install Pathname.pwd
-    end
+    ENV["HIDAPI_SYSTEM_HIDAPI"] = ENV["HIDAPI_WITH_LIBUSB"] = "1"
 
-    venv.pip_install resources.reject { |r| r.name == "hidapi" }
-    venv.pip_install_and_link buildpath
+    venv = virtualenv_install_with_resources
 
     # add path configuration file to find cython
+    python3 = "python3.12"
     site_packages = Language::Python.site_packages(python3)
-    (libexec/site_packages/"homebrew-onlykey-agent.pth").write Formula["cython"].opt_libexec/site_packages
+    (venv.site_packages/"homebrew-onlykey-agent.pth").write Formula["cython"].opt_libexec/site_packages
   end
 
   test do
     # the device mut not be plugged in to get the expected message
     # since CI is the foremost user of `brew test` we assume that there is no device
     output = shell_output("#{bin}/onlykey-agent test@example.com 2>&1", 1)
-    assert_match("try unplugging and replugging your device", output)
+    assert_match "try unplugging and replugging your device", output
   end
 end
