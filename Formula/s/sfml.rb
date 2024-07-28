@@ -43,7 +43,7 @@ class Sfml < Formula
     # Always remove the "extlibs" to avoid install_name_tool failure
     # (https://github.com/Homebrew/homebrew/pull/35279) but leave the
     # headers that were moved there in https://github.com/SFML/SFML/pull/795
-    rm_rf Dir["extlibs/*"] - ["extlibs/headers"]
+    rm_r(Dir["extlibs/*"] - ["extlibs/headers"])
 
     args = ["-DCMAKE_INSTALL_RPATH=#{lib}",
             "-DSFML_MISC_INSTALL_PREFIX=#{share}/SFML",
