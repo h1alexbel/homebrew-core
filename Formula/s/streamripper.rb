@@ -31,7 +31,7 @@ class Streamripper < Formula
     ENV.append_to_cflags ENV.cppflags
 
     # remove bundled libmad
-    (buildpath/"libmad-0.15.1b").rmtree
+    rm_r(buildpath/"libmad-0.15.1b")
 
     chmod 0755, "./install-sh" # or "make install" fails
 
