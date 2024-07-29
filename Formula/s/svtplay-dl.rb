@@ -3,8 +3,8 @@ class SvtplayDl < Formula
 
   desc "Download videos from https://www.svtplay.se/"
   homepage "https://svtplay-dl.se/"
-  url "https://files.pythonhosted.org/packages/52/cc/c56624254fd8321d97094f56284c3ab0de5c2758155c50a0b2552bac33eb/svtplay_dl-4.89.tar.gz"
-  sha256 "28c5d7d4c8281d653dfb174b4c4780e4fe7ba120bcb8ce59ef698cafa15e4b5e"
+  url "https://files.pythonhosted.org/packages/1c/14/da882f3b053156029abe66672270903da3f3753223b7f1c6e08bdac0b623/svtplay_dl-4.97.tar.gz"
+  sha256 "6d63dd87e55d30827a745f6d568dd33de7c428f4186e25f344f4908062116db9"
   license "MIT"
 
   bottle do
@@ -66,6 +66,6 @@ class SvtplayDl < Formula
   test do
     url = "https://tv.aftonbladet.se/video/357803"
     match = "https://amd-ab.akamaized.net/ab/vod/2023/07/64b249d222f325d618162f76/720_3500_pkg.m3u8"
-    assert_match match, shell_output("#{bin}/svtplay-dl -g #{url}")
+    assert_match match, shell_output("#{bin}/svtplat-dl -g #{url}")
   end
 end
